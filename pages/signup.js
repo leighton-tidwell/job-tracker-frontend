@@ -1,17 +1,32 @@
-import { Layout, Form, Input, Button, Card, Typography } from "antd";
+import { useState } from "react";
+import { Layout, Form, Input, Button, Card, Typography, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import axios from "axios";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+  const onFinish = (values) => {
+    const { email, password } = values;
+
+    axios
+      .post("/api/auth/signup", { email, password })
+      .then((res) => {
+        router.push({ pathname: "/login", query: { signup: true } });
+      })
+      .catch((res) => {
+        const { response } = res;
+        const {
+          data: { error },
+        } = response;
+        setError(error);
+      });
   };
 
   return (
@@ -90,6 +105,18 @@ const Login = () => {
                 placeholder="Confirm Password"
               />
             </Form.Item>
+
+            {error ? (
+              <Form.Item>
+                <Alert
+                  message={error}
+                  type="error"
+                  showIcon
+                  closable
+                  onClose={() => setError("")}
+                />
+              </Form.Item>
+            ) : null}
 
             <Form.Item>
               <Button

@@ -1,5 +1,7 @@
-import { Layout, Form, Input, Button, Card, Typography } from "antd";
+import { useState, useEffect } from "react";
+import { Layout, Form, Input, Button, Card, Typography, Alert } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import axios from "axios";
 
@@ -7,22 +9,31 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Login = () => {
+  const [error, setError] = useState("");
+  const [signup, setSignup] = useState(false);
+  const router = useRouter();
+
   const onFinish = (values) => {
     const { email, password } = values;
 
     axios
       .post("/api/auth/login", { email, password })
       .then((res) => {
-        console.log(res);
+        router.push("/");
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((res) => {
+        const { response } = res;
+        const {
+          data: { error },
+        } = response;
+        setError(error);
       });
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  useEffect(() => {
+    const { query } = router;
+    if (query.signup) setSignup(true);
+  }, [router]);
 
   return (
     <Layout
@@ -85,6 +96,28 @@ const Login = () => {
                 Forgot password
               </a>
             </Form.Item> */}
+
+            {error ? (
+              <Form.Item>
+                <Alert
+                  message={error}
+                  type="error"
+                  showIcon
+                  closable
+                  onClose={() => setError("")}
+                />
+              </Form.Item>
+            ) : null}
+
+            {signup ? (
+              <Form.Item>
+                <Alert
+                  message="Successfully signed up! Please login."
+                  type="success"
+                  showIcon
+                />
+              </Form.Item>
+            ) : null}
 
             <Form.Item>
               <Button

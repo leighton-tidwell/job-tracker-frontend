@@ -1,12 +1,11 @@
 import axios from "axios";
-import cookie from "cookie";
 
 export default function handler(req, res) {
   const { email, password } = req.body;
   const { headers } = req;
 
   axios
-    .post(`${process.env.API}/auth/login`, { email, password }, { headers })
+    .post(`${process.env.API}/auth/signup`, { email, password }, { headers })
     .then((response) => {
       const { data, headers: returnedHeaders } = response;
 
@@ -14,23 +13,13 @@ export default function handler(req, res) {
         res.setHeader(keyArr[0], keyArr[1])
       );
 
-      const { accessToken } = data;
-      res.setHeader(
-        "Set-Cookie",
-        cookie.serialize("auth-token", accessToken, {
-          httpOnly: true,
-          maxAge: 86400000,
-          path: "/",
-          sameSite: "strict",
-        })
-      );
-
       res.status(200).json(data);
     })
     .catch((err) => {
       const { status, data } = err.response;
-      if (data.includes("BadCredentialsException")) {
-        res.status(status).json({ error: "Invalid email or password!" });
+      console.log(status);
+      if (status === 409) {
+        res.status(status).json({ error: "Email already in use!" });
       } else {
         res.status(status).json({ error: "An error has occured!" });
       }
