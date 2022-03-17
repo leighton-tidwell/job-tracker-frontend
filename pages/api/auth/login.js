@@ -30,9 +30,13 @@ export default function handler(req, res) {
     .catch((err) => {
       const { status, data } = err.response;
       if (data.includes("BadCredentialsException")) {
-        res.status(status).json({ error: "Invalid email or password!" });
+        res
+          .status(err.response?.status)
+          .json({ error: "Invalid email or password!" });
       } else {
-        res.status(status).json({ error: "An error has occured!" });
+        res
+          .status(err.response?.status)
+          .json({ error: "An error has occured!" });
       }
     });
 }
