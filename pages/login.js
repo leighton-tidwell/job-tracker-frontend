@@ -21,7 +21,7 @@ const Login = () => {
     axios
       .post("/api/auth/login", { email, password })
       .then((res) => {
-        router.push("/");
+        router.push("/dashboard");
       })
       .catch((res) => {
         const { response } = res;
