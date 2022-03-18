@@ -3,6 +3,7 @@ import axios from "axios";
 export default function handler(req, res) {
   const { email, password } = req.body;
   const { headers } = req;
+  delete headers["host"];
 
   axios
     .post(`${process.env.API}/auth/signup`, { email, password }, { headers })

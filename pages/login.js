@@ -11,10 +11,12 @@ const { Title } = Typography;
 const Login = () => {
   const [error, setError] = useState("");
   const [signup, setSignup] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onFinish = (values) => {
     const { email, password } = values;
+    setLoading(true);
 
     axios
       .post("/api/auth/login", { email, password })
@@ -27,6 +29,7 @@ const Login = () => {
           data: { error },
         } = response;
         setError(error);
+        setLoading(false);
       });
   };
 
@@ -124,6 +127,7 @@ const Login = () => {
                 type="primary"
                 htmlType="submit"
                 className="login-form-button"
+                loading={loading}
               >
                 Log in
               </Button>

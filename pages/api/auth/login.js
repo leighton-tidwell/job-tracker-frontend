@@ -2,21 +2,18 @@ import axios from "axios";
 import cookie from "cookie";
 
 export default function handler(req, res) {
-  console.log("HELLO1");
   const { email, password } = req.body;
   const { headers } = req;
-
-  console.log(process.env.API);
+  delete headers["host"];
 
   axios
     .post(`${process.env.API}/auth/login`, { email, password }, { headers })
     .then((response) => {
       const { data, headers: returnedHeaders } = response;
 
-      Object.entries(returnedHeaders).forEach((keyArr) =>
-        res.setHeader(keyArr[0], keyArr[1])
-      );
-      console.log("HELLLLOOOO");
+      Object.entries(returnedHeaders).forEach((keyArr) => {
+        res.setHeader(keyArr[0], keyArr[1]);
+      });
 
       const { accessToken } = data;
       res.setHeader(
@@ -32,13 +29,11 @@ export default function handler(req, res) {
       res.status(200).json(data);
     })
     .catch((err) => {
-      console.log("HELLO");
-      console.log(err);
-      console.log(err.response);
-      // if (data.includes("BadCredentialsException")) {
-      //   res.status(status).json({ error: "Invalid email or password!" });
-      // } else {
-      //   res.status(status).json({ error: "An error has occured!" });
-      // }
+      const { status, data } = err.response;
+      if (data.includes("BadCredentialsException")) {
+        res.status(status).json({ error: "Invalid email or password!" });
+      } else {
+        res.status(status).json({ error: "An error has occured!" });
+      }
     });
 }
