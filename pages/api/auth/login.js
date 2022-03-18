@@ -1,12 +1,12 @@
 import axios from "axios";
 import cookie from "cookie";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { email, password } = req.body;
   const { headers } = req;
   delete headers["host"];
 
-  axios
+  await axios
     .post(`${process.env.API}/auth/login`, { email, password }, { ...headers })
     .then((response) => {
       const { data, headers: returnedHeaders } = response;
@@ -27,14 +27,14 @@ export default function handler(req, res) {
         })
       );
 
-      res.status(200).json(data);
+      return res.status(200).json(data);
     })
     .catch((err) => {
-      const { status, data, headers } = err.response;
+      const { status, data } = err.response;
       if (data.includes("BadCredentialsException")) {
-        res.status(status).json({ error: "Invalid email or password!" });
+        return res.status(status).json({ error: "Invalid email or password!" });
       } else {
-        res.status(status).json({ error: "An error has occured!" });
+        return res.status(status).json({ error: "An error has occured!" });
       }
     });
 }

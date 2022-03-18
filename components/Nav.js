@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Layout, Menu } from "antd";
 import {
@@ -11,8 +12,23 @@ import {
 
 const { Sider } = Layout;
 
-const Nav = () => {
-  const [collapsed, setCollapsed] = useState(false);
+const nav = [
+  {
+    id: "job-board",
+    title: "Job Board",
+    icon: <DashboardOutlined />,
+    href: "/dashboard",
+  },
+  {
+    id: "contacts",
+    title: "Contacts",
+    icon: <ContactsOutlined />,
+    href: "/dashboard/contacts",
+  },
+];
+
+const Nav = ({ collapsed, setCollapsed }) => {
+  const [defaultKey, setDefaultKey] = useState("job-board");
   const router = useRouter();
 
   const logout = () => {
@@ -26,11 +42,26 @@ const Nav = () => {
       });
   };
 
+  useEffect(() => {
+    const { pathname } = router;
+    const navItem = nav.find((item) => item.href === pathname);
+    setDefaultKey(navItem.id);
+  }, [router]);
+
   return (
     <Sider
       collapsible
       collapsed={collapsed}
       onCollapse={() => setCollapsed(!collapsed)}
+      style={{
+        overflow: "auto",
+        height: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 2,
+      }}
     >
       <div
         style={{
@@ -39,26 +70,25 @@ const Nav = () => {
           color: "white",
           fontWeight: "bold",
           textAlign: collapsed ? "center" : "left",
-          fontSize: collapsed ? "1.5rem" : "1rem",
+          fontSize: "1rem",
           transition: "all 0.3s ease",
         }}
       >
         <PushpinFilled /> {!collapsed && "Job Tracker"}
       </div>
-      <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
-        <Menu.Item key="1" icon={<DashboardOutlined />}>
-          Job Board
-        </Menu.Item>
-        <Menu.Item key="2" icon={<ContactsOutlined />}>
-          Contacts
-        </Menu.Item>
+      <Menu theme="dark" selectedKeys={[defaultKey]} mode="inline">
+        {nav.map((item) => (
+          <Menu.Item key={item.id} icon={item.icon}>
+            <Link href={item.href} passHref>
+              {item.title}
+            </Link>
+          </Menu.Item>
+        ))}
         <Menu.Item
           key="3"
           icon={<LogoutOutlined />}
           style={{
             fontWeight: "bold",
-            position: "absolute",
-            bottom: "calc(48px + 1em)",
           }}
           onClick={logout}
         >

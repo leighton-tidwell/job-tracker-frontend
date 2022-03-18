@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { email, password } = req.body;
   const { headers } = req;
   delete headers["host"];
 
-  axios
+  await axios
     .post(`${process.env.API}/auth/signup`, { email, password }, { headers })
     .then((response) => {
       const { data, headers: returnedHeaders } = response;
@@ -14,15 +14,14 @@ export default function handler(req, res) {
         res.setHeader(keyArr[0], keyArr[1])
       );
 
-      res.status(200).json(data);
+      return res.status(200).json(data);
     })
     .catch((err) => {
       const { status, data } = err.response;
-      console.log(status);
       if (status === 409) {
-        res.status(status).json({ error: "Email already in use!" });
+        return res.status(status).json({ error: "Email already in use!" });
       } else {
-        res.status(status).json({ error: "An error has occured!" });
+        return res.status(status).json({ error: "An error has occured!" });
       }
     });
 }

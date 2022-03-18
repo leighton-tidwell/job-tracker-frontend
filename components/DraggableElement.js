@@ -1,26 +1,23 @@
 import { Divider, Card } from "antd";
 import { Droppable } from "react-beautiful-dnd";
-import { BoardItem } from ".";
+import { BoardItem, AddJobModal } from ".";
 
-const DraggableElement = ({ elements, prefix, category }) => {
+const DraggableElement = ({ elements, prefix, category, handleAddJob }) => {
   return (
     <div>
       <Divider orientation="center">{category}</Divider>
       <Card style={{ minWidth: "300px" }}>
-        <Card
-          style={{
-            marginBottom: "1em",
-            borderStyle: "dashed",
-            textAlign: "center",
-            cursor: "pointer",
-          }}
-          className="add-item"
-        >
-          Click to add
-        </Card>
+        <AddJobModal onAccept={handleAddJob} category={prefix} />
         <Droppable droppableId={`${prefix}`}>
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{
+                minHeight: "5px",
+                ...provided.droppableProps.style,
+              }}
+            >
               {elements.map((item, index) => (
                 <BoardItem key={item.id} item={item} index={index} />
               ))}

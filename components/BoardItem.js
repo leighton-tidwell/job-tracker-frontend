@@ -1,5 +1,7 @@
 import { Draggable } from "react-beautiful-dnd";
-import { Card } from "antd";
+import { Card, Avatar, Typography } from "antd";
+
+const { Text } = Typography;
 
 const BoardItem = ({ item, index }) => {
   return (
@@ -10,11 +12,34 @@ const BoardItem = ({ item, index }) => {
           snapshot={snapshot}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          style={{ marginBottom: "1em", ...provided.draggableProps.style }}
+          style={{
+            cursor: "pointer",
+            marginBottom: "1em",
+            ...provided.draggableProps.style,
+          }}
         >
-          <Card style={{ minHeight: 75 }}>
-            {item.title}
-            {item.description}
+          <Card
+            style={{ minHeight: 75 }}
+            className="board-item"
+            bodyStyle={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Avatar size="large" style={{}}>
+              {item.title.slice(0, 1)}
+            </Avatar>
+            <div
+              style={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                marginLeft: "8px",
+              }}
+            >
+              <Text strong>{item.title}</Text>
+              <Text>{item.company}</Text>
+            </div>
           </Card>
         </div>
       )}

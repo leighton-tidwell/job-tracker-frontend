@@ -28,7 +28,7 @@ const Home = () => {
             Job Tracker
           </div>
           <div style={{ marginLeft: "auto" }}>
-            <Link href="/login">
+            <Link href="/login" passHref>
               <Button
                 type="primary"
                 size="large"
@@ -77,7 +77,7 @@ const Home = () => {
             </div>
             <div style={{ padding: "2rem", fontSize: "2em", width: "50%" }}>
               Click the{" "}
-              <Link href="/login">
+              <Link href="/login" passHref>
                 <Button
                   type="primary"
                   size="large"
@@ -86,7 +86,7 @@ const Home = () => {
                 >
                   Login
                 </Button>
-              </Link>
+              </Link>{" "}
               button to get started
             </div>
           </div>
@@ -94,7 +94,7 @@ const Home = () => {
         <Footer
           style={{ textAlign: "center", background: "#001529", color: "white" }}
         >
-          Job Tracker ©2020 Created by{" "}
+          Job Tracker ©©{new Date().getFullYear()} Created by{" "}
           <a href="https://tdwl.dev">TDWL Development</a>
         </Footer>
       </Layout>
