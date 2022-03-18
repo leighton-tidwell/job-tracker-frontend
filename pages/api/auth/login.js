@@ -2,6 +2,7 @@ import axios from "axios";
 import cookie from "cookie";
 
 export default function handler(req, res) {
+  console.log("HELLO1");
   const { email, password } = req.body;
   const { headers } = req;
 
@@ -15,6 +16,7 @@ export default function handler(req, res) {
       Object.entries(returnedHeaders).forEach((keyArr) =>
         res.setHeader(keyArr[0], keyArr[1])
       );
+      console.log("HELLLLOOOO");
 
       const { accessToken } = data;
       res.setHeader(
@@ -30,11 +32,9 @@ export default function handler(req, res) {
       res.status(200).json(data);
     })
     .catch((err) => {
+      console.log("HELLO");
       console.log(err);
       console.log(err.response);
-      throw new Error(err);
-
-      res.status(500).json(err.response);
       // if (data.includes("BadCredentialsException")) {
       //   res.status(status).json({ error: "Invalid email or password!" });
       // } else {
