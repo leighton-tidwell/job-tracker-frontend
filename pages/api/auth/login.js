@@ -7,12 +7,13 @@ export default function handler(req, res) {
   delete headers["host"];
 
   axios
-    .post(`${process.env.API}/auth/login`, { email, password }, { headers })
+    .post(`${process.env.API}/auth/login`, { email, password }, { ...headers })
     .then((response) => {
       const { data, headers: returnedHeaders } = response;
 
       Object.entries(returnedHeaders).forEach((keyArr) => {
-        res.setHeader(keyArr[0], keyArr[1]);
+        if (keyArr[0] !== "transfer-encoding")
+          res.setHeader(keyArr[0], keyArr[1]);
       });
 
       const { accessToken } = data;
@@ -29,7 +30,7 @@ export default function handler(req, res) {
       res.status(200).json(data);
     })
     .catch((err) => {
-      const { status, data } = err.response;
+      const { status, data, headers } = err.response;
       if (data.includes("BadCredentialsException")) {
         res.status(status).json({ error: "Invalid email or password!" });
       } else {
