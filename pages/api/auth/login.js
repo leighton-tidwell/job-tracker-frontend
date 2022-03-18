@@ -5,6 +5,8 @@ export default function handler(req, res) {
   const { email, password } = req.body;
   const { headers } = req;
 
+  console.log(process.env.API);
+
   axios
     .post(`${process.env.API}/auth/login`, { email, password }, { headers })
     .then((response) => {
@@ -29,11 +31,11 @@ export default function handler(req, res) {
     })
     .catch((err) => {
       console.log(err);
-      const { status, data } = err.response;
-      if (data.includes("BadCredentialsException")) {
-        res.status(status).json({ error: "Invalid email or password!" });
-      } else {
-        res.status(status).json({ error: "An error has occured!" });
-      }
+      console.log(err.response);
+      // if (data.includes("BadCredentialsException")) {
+      //   res.status(status).json({ error: "Invalid email or password!" });
+      // } else {
+      //   res.status(status).json({ error: "An error has occured!" });
+      // }
     });
 }
