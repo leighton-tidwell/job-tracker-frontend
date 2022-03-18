@@ -32,6 +32,7 @@ export default function handler(req, res) {
     .catch((err) => {
       console.log(err);
       console.log(err.response);
+      res.status(500).json(err.response);
       // if (data.includes("BadCredentialsException")) {
       //   res.status(status).json({ error: "Invalid email or password!" });
       // } else {
