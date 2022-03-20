@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Divider, Card, Form, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { v4 as uuidv4 } from "uuid";
 
 const AddCategoryModal = ({ onAccept }) => {
   const [visible, setVisible] = useState(false);
@@ -13,7 +14,7 @@ const AddCategoryModal = ({ onAccept }) => {
   const handleOkay = () => {
     form.validateFields().then((values) => {
       form.resetFields();
-      onAccept({ ...values, id: values.category.split(" ").join("-") });
+      onAccept({ ...values, id: uuidv4() });
       setVisible(false);
     });
   };
