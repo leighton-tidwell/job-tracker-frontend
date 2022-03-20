@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Card, Form, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { v4 as uuidv4 } from "uuid";
 
 const AddJobModal = ({ onAccept, category }) => {
   const [visible, setVisible] = useState(false);
@@ -16,7 +17,7 @@ const AddJobModal = ({ onAccept, category }) => {
       onAccept({
         ...values,
         category,
-        id: values.title.split(" ").join("-"),
+        id: uuidv4(),
       });
       setVisible(false);
     });

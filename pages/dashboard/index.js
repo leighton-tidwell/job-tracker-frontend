@@ -1,49 +1,15 @@
 import axios from "axios";
 import DefaultLayout from "../../layouts/Default";
-import { useState } from "react";
+import debounce from "lodash.debounce";
+import { useEffect, useState, useCallback } from "react";
 import { Typography } from "antd";
 import { DragDropContext, resetServerContext } from "react-beautiful-dnd";
 import { DraggableElement, AddCategoryModal } from "../../components";
 
 const { Title } = Typography;
 
-const data = [
-  {
-    id: "applied",
-    category: "Applied",
-    items: [
-      {
-        id: 1,
-        title: "Item 1",
-        company: "Item 1 description",
-      },
-      {
-        id: 2,
-        title: "Item 2",
-        company: "Item 2 description",
-      },
-    ],
-  },
-  {
-    id: "interview",
-    category: "Interview",
-    items: [
-      {
-        id: 3,
-        title: "Item 3",
-        company: "Item 3 description",
-      },
-      {
-        id: 4,
-        title: "Item 4",
-        company: "Item 4 description",
-      },
-    ],
-  },
-];
-
 const Dashboard = ({ user }) => {
-  const [columns, setColumns] = useState(data);
+  const [columns, setColumns] = useState(user.category.lists);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -114,6 +80,22 @@ const Dashboard = ({ user }) => {
     );
   };
 
+  const updateColumns = useCallback(
+    debounce((columns) => {
+      axios
+        .post("/api/users/categories", {
+          ...user.category,
+          lists: [...columns],
+        })
+        .catch((error) => console.log(error));
+    }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    updateColumns(columns);
+  }, [columns, updateColumns]);
+
   return (
     <DefaultLayout>
       <Title level={2} style={{ margin: 0, padding: 0 }}>
@@ -160,6 +142,15 @@ export const getServerSideProps = async (ctx) => {
       },
     });
 
+    const { data: lists } = await axios.get(
+      `${process.env.api}/users/categories`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     resetServerContext();
 
     return {
@@ -167,6 +158,7 @@ export const getServerSideProps = async (ctx) => {
         user: {
           id: data.id,
           email: data.username,
+          category: lists,
         },
       },
     };
