@@ -15,9 +15,10 @@ export default async function handler(req, res) {
       .then((response) => {
         const { data, headers: returnedHeaders } = response;
 
-        Object.entries(returnedHeaders).forEach((keyArr) =>
-          res.setHeader(keyArr[0], keyArr[1])
-        );
+        Object.entries(returnedHeaders).forEach((keyArr) => {
+          if (keyArr[0] !== "transfer-encoding")
+            res.setHeader(keyArr[0], keyArr[1]);
+        });
 
         return res.status(200).json(data);
       })

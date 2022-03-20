@@ -24,12 +24,17 @@ const Login = () => {
         router.push("/dashboard");
       })
       .catch((res) => {
-        const { response } = res;
-        const {
-          data: { error },
-        } = response;
-        setError(error);
-        setLoading(false);
+        const { response, status } = res;
+        if (status === 504) {
+          setError("Server is not responding, please try again.");
+          setLoading(False);
+        } else {
+          const {
+            data: { error },
+          } = response;
+          setError(error);
+          setLoading(false);
+        }
       });
   };
 
