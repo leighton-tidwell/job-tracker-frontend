@@ -143,7 +143,7 @@ export const getServerSideProps = async (ctx) => {
     });
 
     const { data: lists } = await axios.get(
-      `${process.env.api}/users/categories`,
+      `${process.env.API}/users/categories`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -163,6 +163,7 @@ export const getServerSideProps = async (ctx) => {
       },
     };
   } catch (err) {
+    console.log(error);
     return {
       redirect: {
         destination: "/login",
