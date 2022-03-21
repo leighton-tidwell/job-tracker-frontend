@@ -1,9 +1,25 @@
 import { Divider, Card } from "antd";
 import { Droppable } from "react-beautiful-dnd";
-import { BoardItem, AddJobModal } from ".";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  BoardItem,
+  AddJobModal,
+  ConfirmDeleteModal,
+  EditCategoryModal,
+  MoveCategoryModal,
+} from ".";
 
-const DraggableElement = ({ elements, prefix, category, handleAddJob }) => {
+const DraggableElement = ({
+  elements,
+  prefix,
+  category,
+  categories,
+  handleAddJob,
+  handleDeleteCategory,
+  handleEditCategory,
+  handleMoveCategory,
+  handleDeleteJob,
+  handleUpdateJob,
+}) => {
   return (
     <div>
       <Divider orientation="center">{category}</Divider>
@@ -11,8 +27,20 @@ const DraggableElement = ({ elements, prefix, category, handleAddJob }) => {
         style={{ minWidth: "300px" }}
         title={
           <div style={{ display: "flex" }}>
-            <EditOutlined style={{ flexGrow: 1, textAlign: "left" }} />
-            {!elements.length && <DeleteOutlined />}
+            <EditCategoryModal
+              onAccept={handleEditCategory}
+              defaultValue={category}
+              id={prefix}
+              style={{ flexGrow: 1, textAlign: "left" }}
+            />
+            <MoveCategoryModal
+              categories={categories}
+              onAccept={handleMoveCategory}
+              id={prefix}
+            />
+            {!elements.length && (
+              <ConfirmDeleteModal id={prefix} onAccept={handleDeleteCategory} />
+            )}
           </div>
         }
       >
@@ -28,7 +56,14 @@ const DraggableElement = ({ elements, prefix, category, handleAddJob }) => {
               }}
             >
               {elements.map((item, index) => (
-                <BoardItem key={item.id} item={item} index={index} />
+                <BoardItem
+                  handleUpdateJob={handleUpdateJob}
+                  handleDeleteJob={handleDeleteJob}
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  category={prefix}
+                />
               ))}
               {provided.placeholder}
             </div>

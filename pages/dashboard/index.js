@@ -80,6 +80,60 @@ const Dashboard = ({ user }) => {
     );
   };
 
+  const handleDeleteCategory = (id) => {
+    setColumns((prevColumns) =>
+      prevColumns.filter((column) => column.id !== id)
+    );
+  };
+
+  const handleEditCategory = (id, name) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) => {
+        if (column.id === id) return { ...column, category: name };
+        return column;
+      })
+    );
+  };
+
+  const handleMoveCategory = (id, newIndex) => {
+    setColumns((prevColumns) => {
+      const column = prevColumns.find((c) => c.id === id);
+      const index = prevColumns.indexOf(column);
+      const newColumns = [...prevColumns];
+      newColumns.splice(index, 1);
+      newColumns.splice(newIndex, 0, column);
+      return newColumns;
+    });
+  };
+
+  const handleDeleteJob = (columnId, id) => {
+    setColumns((prevColumns) => {
+      return prevColumns.map((column) => {
+        if (column.id === columnId) {
+          return {
+            ...column,
+            items: column.items.filter((item) => item.id !== id),
+          };
+        }
+        return column;
+      });
+    });
+  };
+
+  const handleUpdateJob = (id, job) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) => {
+        return {
+          ...column,
+          items: column.items.map((item) => {
+            if (item.id === id) return job;
+            return item;
+          }),
+        };
+      })
+    );
+  };
+
   const updateColumns = useCallback(
     debounce((columns) => {
       axios
@@ -110,7 +164,13 @@ const Dashboard = ({ user }) => {
                 key={column.id}
                 prefix={column.id}
                 category={column.category}
+                categories={columns}
                 handleAddJob={handleAddJob}
+                handleDeleteCategory={handleDeleteCategory}
+                handleEditCategory={handleEditCategory}
+                handleMoveCategory={handleMoveCategory}
+                handleDeleteJob={handleDeleteJob}
+                handleUpdateJob={handleUpdateJob}
               />
             ))}
           </DragDropContext>

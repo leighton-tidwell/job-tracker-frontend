@@ -1,9 +1,25 @@
+import { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { Card, Avatar, Typography } from "antd";
+import { EditJobModal } from ".";
 
-const { Text } = Typography;
+const BoardItem = ({
+  item,
+  index,
+  handleDeleteJob,
+  handleUpdateJob,
+  category,
+}) => {
+  const [showDelete, setShowDelete] = useState(false);
 
-const BoardItem = ({ item, index }) => {
+  const toggleDelete = () => {
+    setShowDelete((prevState) => !prevState);
+  };
+
+  const onDeleteClick = (e) => {
+    e.stopPropagation();
+    handleDeleteJob(category, item.id);
+  };
+
   return (
     <Draggable draggableId={`${item.id}`} index={index}>
       {(provided, snapshot) => (
@@ -18,29 +34,13 @@ const BoardItem = ({ item, index }) => {
             ...provided.draggableProps.style,
           }}
         >
-          <Card
-            style={{ minHeight: 75 }}
-            className="board-item"
-            bodyStyle={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Avatar size="large" style={{}}>
-              {item.title.slice(0, 1)}
-            </Avatar>
-            <div
-              style={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                marginLeft: "8px",
-              }}
-            >
-              <Text strong>{item.title}</Text>
-              <Text>{item.company}</Text>
-            </div>
-          </Card>
+          <EditJobModal
+            item={item}
+            onDeleteClick={onDeleteClick}
+            showDelete={showDelete}
+            toggleDelete={toggleDelete}
+            handleUpdateJob={handleUpdateJob}
+          />
         </div>
       )}
     </Draggable>

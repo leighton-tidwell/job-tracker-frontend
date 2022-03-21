@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Modal, Card, Form, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const AddJobModal = ({ onAccept, category }) => {
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const showModal = () => {
@@ -13,13 +15,39 @@ const AddJobModal = ({ onAccept, category }) => {
 
   const handleOkay = () => {
     form.validateFields().then((values) => {
+      setLoading(true);
       form.resetFields();
+      const jobId = uuidv4();
       onAccept({
         ...values,
         category,
-        id: uuidv4(),
+        postUrl: "",
+        color: "white",
+        location: "",
+        id: jobId,
       });
-      setVisible(false);
+
+      axios
+        .post(`/api/users/activities/job`, {
+          jobId,
+          activities: [],
+        })
+        .then(() => {
+          axios
+            .post(`/api/users/notes/job`, { jobId, notes: [] })
+            .then(() => {
+              setLoading(false);
+              setVisible(false);
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
     });
   };
 
@@ -33,6 +61,7 @@ const AddJobModal = ({ onAccept, category }) => {
         <PlusOutlined /> Click to add
       </Card>
       <Modal
+        confirmLoading={loading}
         title="Add Job"
         visible={visible}
         onOk={handleOkay}
@@ -44,7 +73,7 @@ const AddJobModal = ({ onAccept, category }) => {
             label="Company"
             rules={[{ required: true, message: "Please input company name!" }]}
           >
-            <Input placeholder="Company" />
+            <Input placeholder="Company" autoComplete="off" />
           </Form.Item>
           <Form.Item
             name="title"
@@ -53,7 +82,7 @@ const AddJobModal = ({ onAccept, category }) => {
               { required: true, message: "Please input job title name!" },
             ]}
           >
-            <Input placeholder="Job title" />
+            <Input placeholder="Job title" autoComplete="off" />
           </Form.Item>
         </Form>
       </Modal>

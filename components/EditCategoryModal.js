@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Modal, Divider, Card, Form, Input } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { v4 as uuidv4 } from "uuid";
+import { Modal, Form, Input } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
-const AddCategoryModal = ({ onAccept }) => {
+const EditCategoryModal = ({ id, onAccept, defaultValue }) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -13,8 +12,7 @@ const AddCategoryModal = ({ onAccept }) => {
 
   const handleOkay = () => {
     form.validateFields().then((values) => {
-      form.resetFields();
-      onAccept({ ...values, id: uuidv4() });
+      onAccept(id, values.category);
       setVisible(false);
     });
   };
@@ -25,14 +23,18 @@ const AddCategoryModal = ({ onAccept }) => {
 
   return (
     <>
-      <div>
-        <Divider orientation="center">New Category</Divider>
-        <Card className="add-category" onClick={showModal}>
-          <PlusOutlined /> Add
-        </Card>
+      <div
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          alignItems: "center",
+          textAlign: "left",
+        }}
+      >
+        <EditOutlined onClick={showModal} />
       </div>
       <Modal
-        title="Add Category"
+        title="Edit Category"
         visible={visible}
         onOk={handleOkay}
         onCancel={handleCancel}
@@ -43,7 +45,11 @@ const AddCategoryModal = ({ onAccept }) => {
             label="Category Name"
             rules={[{ required: true, message: "Please input category name!" }]}
           >
-            <Input placeholder="Category" autoComplete="off" />
+            <Input
+              placeholder="Category"
+              defaultValue={defaultValue}
+              autoComplete="off"
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -51,4 +57,4 @@ const AddCategoryModal = ({ onAccept }) => {
   );
 };
 
-export default AddCategoryModal;
+export default EditCategoryModal;

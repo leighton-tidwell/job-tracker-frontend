@@ -1,7 +1,16 @@
 export { default as AddCategoryModal } from "./AddCategoryModal";
+export { default as AddContactModal } from "./AddContactModal";
 export { default as AddJobModal } from "./AddJobModal";
 export { default as BoardItem } from "./BoardItem";
+export { default as ConfirmDeleteModal } from "./ConfirmDeleteModal";
+export { default as ConfirmDeleteJob } from "./ConfirmDeleteJob";
 export { default as ContentWrapper } from "./ContentWrapper";
+export { default as EditCategoryModal } from "./EditCategoryModal";
+export { default as EditJobActivities } from "./EditJobActivities";
+export { default as EditJobForm } from "./EditJobForm";
+export { default as EditJobModal } from "./EditJobModal";
+export { default as EditJobNotes } from "./EditJobNotes";
 export { default as DraggableElement } from "./DraggableElement";
 export { default as Footer } from "./Footer";
+export { default as MoveCategoryModal } from "./MoveCategoryModal";
 export { default as Nav } from "./Nav";

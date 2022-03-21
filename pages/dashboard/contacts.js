@@ -1,74 +1,42 @@
-import axios from "axios";
-import DefaultLayout from "../../layouts/Default";
-import { Typography, Card, Button, Avatar } from "antd";
+import { useEffect, useState } from "react";
+import { Typography, Card, Button, Avatar, Spin } from "antd";
 import {
   PlusOutlined,
   CompassOutlined,
   MailOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
+import { AddContactModal } from "../../components";
+import axios from "axios";
+import DefaultLayout from "../../layouts/Default";
 
 const { Title, Text, Link: AntLink } = Typography;
 
-const contacts = [
-  {
-    id: 1,
-    name: "Jane Doe",
-    position: "CEO",
-    company: "Company",
-    location: "New York",
-    email: "testemail@temail.com",
-    phone: "1234567890",
-  },
-  {
-    id: 2,
-    name: "Jane Doe",
-    position: "CEO",
-    company: "Company",
-    location: "New York",
-    email: "testemail@temail.com",
-    phone: "1234567890",
-  },
-  {
-    id: 3,
-    name: "Jane Doe",
-    position: "CEO",
-    company: "Company",
-    location: "New York",
-    email: "testemail@temail.com",
-    phone: "1234567890",
-  },
-  {
-    id: 4,
-    name: "Jane Doe",
-    position: "CEO",
-    company: "Company",
-    location: "New York",
-    email: "testemail@temail.com",
-    phone: "1234567890",
-  },
-  {
-    id: 5,
-    name: "Jane Doe",
-    position: "CEO",
-    company: "Company",
-    location: "New York",
-    email: "testemail@temail.com",
-    phone: "1234567890",
-  },
-];
-
 const ContactTitle = ({ contact }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "1em" }}>
+    <div
+      style={{ display: "flex", alignItems: "center", gap: "1em", flexGrow: 1 }}
+    >
       <Avatar size={40}>{contact.name.slice(0, 1)}</Avatar>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <Title style={{ margin: 0 }} level={4}>
+        <Title
+          ellipsis={{ tooltip: contact.name }}
+          style={{ margin: 0, width: 130 }}
+          level={4}
+        >
           {contact.name}
         </Title>
-        <Text style={{ fontWeight: "400" }}>{contact.position}</Text>
-        <Text style={{ lineHeight: ".8em", fontWeight: "400" }}>
-          {contact.company}
+        <Text
+          ellipsis={{ tooltip: contact.position }}
+          style={{ fontWeight: "400", width: 130 }}
+        >
+          {contact.position || "none"}
+        </Text>
+        <Text
+          ellipsis={{ tooltip: contact.company }}
+          style={{ lineHeight: ".8em", fontWeight: "400", width: 130 }}
+        >
+          {contact.company || "none"}
         </Text>
       </div>
     </div>
@@ -77,23 +45,51 @@ const ContactTitle = ({ contact }) => {
 
 const ContactBody = ({ contact }) => {
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
       <Text>
-        <CompassOutlined /> {contact.location}
+        <CompassOutlined /> {contact.location || "none"}
       </Text>
       <Text>
         <MailOutlined />{" "}
-        <AntLink href={`mailto:${contact.email}`}>{contact.email}</AntLink>
+        <AntLink href={contact.email && `mailto:${contact.email}`}>
+          {contact.email || "none"}
+        </AntLink>
       </Text>
       <Text>
         <PhoneOutlined />{" "}
-        <AntLink href={`tel:${contact.phone}`}>{contact.phone}</AntLink>
+        <AntLink href={contact.phone && `tel:${contact.phone}`}>
+          {contact.phone || "none"}
+        </AntLink>
       </Text>
     </div>
   );
 };
 
 const Contacts = ({ user }) => {
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const handleAddContact = (contact) =>
+    new Promise((resolve, reject) => {
+      axios
+        .post("/api/users/contact", contact)
+        .then((data) => {
+          setContacts((prevContacts) => [data.data, ...prevContacts]);
+          resolve();
+        })
+        .catch((error) => reject(error));
+    });
+
+  useEffect(() => {
+    axios
+      .get("/api/users/contacts")
+      .then((data) => {
+        setContacts(data.data);
+        setLoading(false);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   return (
     <DefaultLayout>
       <div
@@ -103,9 +99,7 @@ const Contacts = ({ user }) => {
           Contacts
         </Title>
         <div>
-          <Button type="primary" icon={<PlusOutlined />}>
-            Add Contact
-          </Button>
+          <AddContactModal onAccept={handleAddContact} />
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "1em" }}>
@@ -117,15 +111,33 @@ const Contacts = ({ user }) => {
             gap: "1em",
           }}
         >
-          {contacts.map((contact) => (
-            <Card
-              className="contact-item"
-              title={<ContactTitle contact={contact} />}
-              key={contact.id}
+          {loading ? (
+            <div
+              style={{
+                gridColumn: "span 5",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <ContactBody contact={contact} />
+              <Spin size="large" />
+            </div>
+          ) : contacts.length === 0 ? (
+            <Card className="contact-item" title="No contacts">
+              You currently have no contacts, click <b>add contact</b> to add
+              one!
             </Card>
-          ))}
+          ) : (
+            contacts.map((contact) => (
+              <Card
+                className="contact-item"
+                title={<ContactTitle contact={contact} />}
+                key={contact.id}
+              >
+                <ContactBody contact={contact} />
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </DefaultLayout>
