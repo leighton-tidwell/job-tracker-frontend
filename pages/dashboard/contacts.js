@@ -1,80 +1,45 @@
 import { useEffect, useState } from "react";
-import { Typography, Card, Button, Avatar, Spin } from "antd";
-import {
-  PlusOutlined,
-  CompassOutlined,
-  MailOutlined,
-  PhoneOutlined,
-} from "@ant-design/icons";
-import { AddContactModal } from "../../components";
+import { Typography } from "antd";
+import { AddContactModal, ContactsGrid, SEO } from "../../components";
 import axios from "axios";
 import DefaultLayout from "../../layouts/Default";
 
-const { Title, Text, Link: AntLink } = Typography;
-
-const ContactTitle = ({ contact }) => {
-  return (
-    <div
-      style={{ display: "flex", alignItems: "center", gap: "1em", flexGrow: 1 }}
-    >
-      <Avatar size={40}>{contact.name.slice(0, 1)}</Avatar>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <Title
-          ellipsis={{ tooltip: contact.name }}
-          style={{ margin: 0, width: 130 }}
-          level={4}
-        >
-          {contact.name}
-        </Title>
-        <Text
-          ellipsis={{ tooltip: contact.position }}
-          style={{ fontWeight: "400", width: 130 }}
-        >
-          {contact.position || "none"}
-        </Text>
-        <Text
-          ellipsis={{ tooltip: contact.company }}
-          style={{ lineHeight: ".8em", fontWeight: "400", width: 130 }}
-        >
-          {contact.company || "none"}
-        </Text>
-      </div>
-    </div>
-  );
-};
-
-const ContactBody = ({ contact }) => {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-      <Text>
-        <CompassOutlined /> {contact.location || "none"}
-      </Text>
-      <Text>
-        <MailOutlined />{" "}
-        <AntLink href={contact.email && `mailto:${contact.email}`}>
-          {contact.email || "none"}
-        </AntLink>
-      </Text>
-      <Text>
-        <PhoneOutlined />{" "}
-        <AntLink href={contact.phone && `tel:${contact.phone}`}>
-          {contact.phone || "none"}
-        </AntLink>
-      </Text>
-    </div>
-  );
-};
+const { Title } = Typography;
 
 const Contacts = ({ user }) => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleAddContact = (contact) =>
+  const handleAddContact = (contact, edit = false) =>
     new Promise((resolve, reject) => {
       axios
         .post("/api/users/contact", contact)
         .then((data) => {
-          setContacts((prevContacts) => [data.data, ...prevContacts]);
+          if (!edit) {
+            setContacts((prevContacts) => [data.data, ...prevContacts]);
+          } else {
+            setContacts((prevContacts) =>
+              prevContacts.map((c) => {
+                if (c.id === contact.id) {
+                  return data.data;
+                }
+                return c;
+              })
+            );
+          }
+          resolve();
+        })
+        .catch((error) => reject(error));
+    });
+
+  const handleDeleteContact = (contact) =>
+    new Promise((resolve, reject) => {
+      axios
+        .delete("/api/users/contact", { data: contact })
+        .then(() => {
+          setContacts((prevContacts) =>
+            prevContacts.filter((c) => c.id !== contact.id)
+          );
           resolve();
         })
         .catch((error) => reject(error));
@@ -91,56 +56,28 @@ const Contacts = ({ user }) => {
   }, []);
 
   return (
-    <DefaultLayout>
-      <div
-        style={{ marginBottom: "1em", display: "flex", alignItems: "center" }}
-      >
-        <Title level={2} style={{ margin: 0, padding: 0, flexGrow: 1 }}>
-          Contacts
-        </Title>
-        <div>
-          <AddContactModal onAccept={handleAddContact} />
-        </div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1em" }}>
+    <>
+      <SEO title="Contacts" />
+      <DefaultLayout>
         <div
-          className="contacts-list"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "1em",
-          }}
+          style={{ marginBottom: "1em", display: "flex", alignItems: "center" }}
         >
-          {loading ? (
-            <div
-              style={{
-                gridColumn: "span 5",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Spin size="large" />
-            </div>
-          ) : contacts.length === 0 ? (
-            <Card className="contact-item" title="No contacts">
-              You currently have no contacts, click <b>add contact</b> to add
-              one!
-            </Card>
-          ) : (
-            contacts.map((contact) => (
-              <Card
-                className="contact-item"
-                title={<ContactTitle contact={contact} />}
-                key={contact.id}
-              >
-                <ContactBody contact={contact} />
-              </Card>
-            ))
-          )}
+          <Title level={2} style={{ margin: 0, padding: 0, flexGrow: 1 }}>
+            Contacts
+          </Title>
+          <div>
+            <AddContactModal jobs={user.jobs} onAccept={handleAddContact} />
+          </div>
         </div>
-      </div>
-    </DefaultLayout>
+        <ContactsGrid
+          contacts={contacts}
+          loading={loading}
+          jobs={user.jobs}
+          handleAddContact={handleAddContact}
+          handleDeleteContact={handleDeleteContact}
+        />
+      </DefaultLayout>
+    </>
   );
 };
 
@@ -165,11 +102,22 @@ export const getServerSideProps = async (ctx) => {
       },
     });
 
+    const {
+      data: { lists },
+    } = await axios.get(`${process.env.API}/users/categories`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const listOfJobs = lists.map((list) => list.items).flat(2);
+
     return {
       props: {
         user: {
           id: data.id,
           email: data.username,
+          jobs: listOfJobs,
         },
       },
     };

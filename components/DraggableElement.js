@@ -63,6 +63,7 @@ const DraggableElement = ({
                   item={item}
                   index={index}
                   category={prefix}
+                  categories={categories}
                 />
               ))}
               {provided.placeholder}

@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Button, Form, Modal, Input } from "antd";
+import { Button, Form, Modal, Input, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-const AddContactModal = ({ onAccept }) => {
+const { Option } = Select;
+
+const AddContactModal = ({ onAccept, jobs, currentJob }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -44,7 +46,11 @@ const AddContactModal = ({ onAccept }) => {
         onOk={handleOkay}
         onCancel={handleCancel}
       >
-        <Form form={form} layout="vertical">
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ jobId: currentJob }}
+        >
           <Form.Item
             name="name"
             label="Name"
@@ -66,6 +72,20 @@ const AddContactModal = ({ onAccept }) => {
           </Form.Item>
           <Form.Item name="phone" label="Phone">
             <Input placeholder="Phone" autoComplete="off" />
+          </Form.Item>
+          <Form.Item name="jobId" label="Link to Job">
+            <Select
+              showSearch
+              optionFilterProp="children"
+              placeholder="Link to Job"
+              allowClear
+            >
+              {jobs.map((job) => (
+                <Option key={job.id} value={job.id}>
+                  {job.company} - {job.title}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>

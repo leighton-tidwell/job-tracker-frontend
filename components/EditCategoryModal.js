@@ -39,17 +39,17 @@ const EditCategoryModal = ({ id, onAccept, defaultValue }) => {
         onOk={handleOkay}
         onCancel={handleCancel}
       >
-        <Form form={form} layout="vertical">
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ category: defaultValue }}
+        >
           <Form.Item
             name="category"
             label="Category Name"
             rules={[{ required: true, message: "Please input category name!" }]}
           >
-            <Input
-              placeholder="Category"
-              defaultValue={defaultValue}
-              autoComplete="off"
-            />
+            <Input placeholder="Category" autoComplete="off" />
           </Form.Item>
         </Form>
       </Modal>

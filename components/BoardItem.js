@@ -8,6 +8,7 @@ const BoardItem = ({
   handleDeleteJob,
   handleUpdateJob,
   category,
+  categories,
 }) => {
   const [showDelete, setShowDelete] = useState(false);
 
@@ -40,6 +41,7 @@ const BoardItem = ({
             showDelete={showDelete}
             toggleDelete={toggleDelete}
             handleUpdateJob={handleUpdateJob}
+            categories={categories}
           />
         </div>
       )}

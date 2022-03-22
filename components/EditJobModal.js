@@ -5,6 +5,7 @@ import {
   EditJobForm,
   EditJobActivities,
   EditJobNotes,
+  JobContactsForm,
 } from ".";
 import {
   InfoCircleOutlined,
@@ -22,6 +23,7 @@ const EditJobModal = ({
   showDelete,
   toggleDelete,
   handleUpdateJob,
+  categories,
 }) => {
   const [visible, setVisible] = useState(false);
   const [colorClass, setColorClass] = useState("board-item-white");
@@ -151,7 +153,7 @@ const EditJobModal = ({
             }
             key="4"
           >
-            Content of Tab Pane 3
+            <JobContactsForm categories={categories} job={item} />
           </TabPane>
         </Tabs>
       </Modal>

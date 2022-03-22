@@ -7,7 +7,6 @@ const EditJobForm = ({ updateJob, job }) => {
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      console.log(job.id, values);
       updateJob(job.id, { ...values, id: job.id });
     });
   };

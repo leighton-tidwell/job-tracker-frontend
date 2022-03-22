@@ -94,15 +94,15 @@ const EditJobNotes = ({ job }) => {
         }}
       >
         {notes.notes.length > 0 &&
-          notes.notes.map((note) => (
+          notes.notes.map((note, i) => (
             <Card
               title={
                 <Text style={{ width: 100 }} ellipsis>
                   {note.text}
                 </Text>
               }
-              style={{ wordBreak: "break-all" }}
-              key={note.id}
+              style={{ wordBreak: "break-word" }}
+              key={notes.id + "-" + i}
             >
               {note.text}
             </Card>

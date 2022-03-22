@@ -1,20 +1,14 @@
-import Head from "next/head";
 import { Layout, Button, Typography } from "antd";
 import { LoginOutlined } from "@ant-design/icons";
+import { SEO } from "../components/";
 import Link from "next/link";
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 const Home = () => {
   return (
-    <div>
-      <Head>
-        <title>Job Tracker</title>
-        <meta
-          name="description"
-          content="Free, simple job application tracker"
-        />
-      </Head>
+    <>
+      <SEO />
       <Layout>
         <Header style={{ display: "flex", flexDirection: "row" }}>
           <div
@@ -98,7 +92,7 @@ const Home = () => {
           <a href="https://tdwl.dev">TDWL Development</a>
         </Footer>
       </Layout>
-    </div>
+    </>
   );
 };
 

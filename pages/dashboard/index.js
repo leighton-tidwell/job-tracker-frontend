@@ -4,7 +4,7 @@ import debounce from "lodash.debounce";
 import { useEffect, useState, useCallback } from "react";
 import { Typography } from "antd";
 import { DragDropContext, resetServerContext } from "react-beautiful-dnd";
-import { DraggableElement, AddCategoryModal } from "../../components";
+import { DraggableElement, AddCategoryModal, SEO } from "../../components";
 
 const { Title } = Typography;
 
@@ -55,7 +55,6 @@ const Dashboard = ({ user }) => {
   };
 
   const handleAddCategory = (category) => {
-    console.log(category);
     setColumns((prevColumns) => [
       ...prevColumns,
       {
@@ -134,6 +133,7 @@ const Dashboard = ({ user }) => {
     );
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateColumns = useCallback(
     debounce((columns) => {
       axios
@@ -151,33 +151,36 @@ const Dashboard = ({ user }) => {
   }, [columns, updateColumns]);
 
   return (
-    <DefaultLayout>
-      <Title level={2} style={{ margin: 0, padding: 0 }}>
-        My Job Board
-      </Title>
-      <div style={{ display: "flex", gap: "1em" }}>
-        {typeof window !== undefined && (
-          <DragDropContext onDragEnd={onDragEnd}>
-            {columns.map((column) => (
-              <DraggableElement
-                elements={column.items}
-                key={column.id}
-                prefix={column.id}
-                category={column.category}
-                categories={columns}
-                handleAddJob={handleAddJob}
-                handleDeleteCategory={handleDeleteCategory}
-                handleEditCategory={handleEditCategory}
-                handleMoveCategory={handleMoveCategory}
-                handleDeleteJob={handleDeleteJob}
-                handleUpdateJob={handleUpdateJob}
-              />
-            ))}
-          </DragDropContext>
-        )}
-        <AddCategoryModal onAccept={handleAddCategory} />
-      </div>
-    </DefaultLayout>
+    <>
+      <SEO title="Dashboard" />
+      <DefaultLayout>
+        <Title level={2} style={{ margin: 0, padding: 0 }}>
+          My Job Board
+        </Title>
+        <div style={{ display: "flex", gap: "1em" }}>
+          {typeof window !== undefined && (
+            <DragDropContext onDragEnd={onDragEnd}>
+              {columns.map((column) => (
+                <DraggableElement
+                  elements={column.items}
+                  key={column.id}
+                  prefix={column.id}
+                  category={column.category}
+                  categories={columns}
+                  handleAddJob={handleAddJob}
+                  handleDeleteCategory={handleDeleteCategory}
+                  handleEditCategory={handleEditCategory}
+                  handleMoveCategory={handleMoveCategory}
+                  handleDeleteJob={handleDeleteJob}
+                  handleUpdateJob={handleUpdateJob}
+                />
+              ))}
+            </DragDropContext>
+          )}
+          <AddCategoryModal onAccept={handleAddCategory} />
+        </div>
+      </DefaultLayout>
+    </>
   );
 };
 

@@ -82,3 +82,33 @@
 .edit-job-modal.ant-modal {
   width: 50vw !important;
 }
+
+.contacts-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1em;
+}
+
+.job-contacts-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1em;
+}
+
+.job-contacts-form-loading {
+  display: flex;
+  grid-column: span 3;
+  justify-content: center;
+  align-items: center;
+}
+
+.contacts-list-loading {
+  display: flex;
+  grid-column: span 5;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-item:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
