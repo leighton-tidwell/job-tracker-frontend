@@ -26,7 +26,6 @@ const Activities = ({ user }) => {
     axios
       .get("/api/users/activities/job/id/" + jobId)
       .then((data) => {
-        console.log(jobId, activityId);
         const newActivities = {
           ...data.data,
           activities: data.data.activities.map((activity) => {
