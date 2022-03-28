@@ -8,6 +8,7 @@ import {
   ContactsOutlined,
   DashboardOutlined,
   LogoutOutlined,
+  FieldTimeOutlined,
 } from "@ant-design/icons";
 
 const { Sider } = Layout;
@@ -24,6 +25,12 @@ const nav = [
     title: "Contacts",
     icon: <ContactsOutlined />,
     href: "/dashboard/contacts",
+  },
+  {
+    id: "activities",
+    title: "Activities",
+    icon: <FieldTimeOutlined />,
+    href: "/dashboard/activities",
   },
 ];
 
